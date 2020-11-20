@@ -16,6 +16,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
+    <!-- fontawesone icons -->
+    <script src="https://kit.fontawesome.com/a69236a15c.js" crossorigin="anonymous"></script>
+
     <title>Indicador CPU-Dashboard-Linux </title>
   </head>
   <body>
@@ -33,7 +36,6 @@
       <div class="container">
         <h1 class="display-4">Indicador CPU - Dashboard Linux</h1>
       </div>
-
     </div>
 
     <div class="container-fluid">
@@ -93,7 +95,13 @@
               </p>
               
             </div>
-
+            <div class="card-footer text-muted">
+              <ul class="nav justify-content-center">
+                <li class="nav-item">
+                  <a class="nav-link active" href="index.php"><i class="fas fa-home"></i>&nbspInicio</a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>        
       </div>
