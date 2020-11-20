@@ -89,7 +89,7 @@
                       }
                 </script>
 
-                <div id="chart_div" style="width: 400px; height: 120px;"></div>
+                <div id="chart_div" style="display: inline-block;"></div>
               </p>
               
             </div>
