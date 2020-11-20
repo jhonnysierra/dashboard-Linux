@@ -16,66 +16,84 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
-    <title>Dashboard - Linux </title>
+    <title>Indicador CPU-Dashboard-Linux </title>
   </head>
   <body>
-
-   
 
     <!-- Optional JavaScript -->
     <!-- Option 2: jQuery, Popper.js, and Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+    
+    <!-- Librerias para graficas Google -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <div class="jumbotron jumbotron-fluid" style="padding: 15px;background-image: linear-gradient( 359.3deg,  rgba(196,214,252,1) 1%, rgba(187,187,187,0) 70.9% );">
       <div class="container">
-        <h1 class="display-4">Dashboard Linux</h1>
-        <p class="lead">Trabajo presentado por: Jhonny Sierra Parra - Juan Pablo Grisales - Miguel Medina</p>
-        <p class="lead">Proyecto Final - Linux I</p>
+        <h1 class="display-4">Indicador CPU - Dashboard Linux</h1>
       </div>
 
     </div>
 
     <div class="container-fluid">
-      <div id="prueba">
-        
-      </div>
       <div class="row justify-content-md-center shadow-sm p-3 mb-5 bg-white rounded">
         <div class="row">
-          <div class="col-sm-6">
-            <div class="card" id="menu1">
-              <div class="card-body">
-                <h5 class="card-title">Indicadores de uso del sistema</h5>
-                <p class="card-text">Aquí puede consultar el estado de uso de los recursos de su sistema tales como:
-                </p>
-                <div class="list-group">
-                  <a href="indicador_cpu.php" class="list-group-item list-group-item-action list-group-item-primary">Consumo de CPU</a>
-                  <br>
-                  <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Consumo de Memoria RAM</a>
-                  <br>
-                  <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Uso de disco duro</a>
-                  <br>
-                  <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Procesos</a>
-                </div>
-              </div>
+          <div class="card text-center">
+            <div class="card-header">
+              SO Linux Mint
             </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="card" id="menu2">
-              <div class="card-body">
-                <h5 class="card-title">Administración de usuarios</h5>
-                <p class="card-text">Aquí puede realizar tareas de administración de los usuarios del sistema  como: &nbsp</p>
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item">Consultar usuarios</li>
-                  <li class="list-group-item">Crear un usuario</li>
-                  <li class="list-group-item">Editar información de un usuario</li>
-                  <li class="list-group-item">Borrar usuarios</li>
-                </ul>
-                <br>
-                <a href="#menu1" class="btn btn-primary">Ir a administración</a>
-              </div>
+            <div class="card-body">
+              <h5 class="card-title">En las gráficas se aprecia el consumo de CPU de los último 5, 10 y 15 minutos respectivamente</h5>
+            <?php 
+                exec ("top -n1 -b| head -1 | awk {'print $10,$11,$12'} | awk -F ', ' {'print $1*100,\"\\n\",$2*100,\"\\n\",$3*100'}", $usocpu);
+            ?>
+
+              <p class="card-text">
+                <script type="text/javascript">
+                      google.charts.load('current', {'packages':['gauge']});
+                      google.charts.setOnLoadCallback(drawChart);
+
+                      function drawChart() {
+
+                        var data = google.visualization.arrayToDataTable([
+                          ['Label', 'Value'],
+                          ['5 min', <?php echo $usocpu[0];?>],
+                          ['10 min', <?php echo $usocpu[1];?>],
+                          ['15 min', <?php echo $usocpu[2];?>]
+                        ]);
+
+                        var options = {
+                          width: 400, height: 120,
+                          redFrom: 90, redTo: 100,
+                          yellowFrom:75, yellowTo: 90,
+                          minorTicks: 5
+                        };
+
+                        var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+
+                        chart.draw(data, options);
+
+                        setInterval(function() {
+                          data.setValue(0, 1, 40 + Math.round(60 * Math.random()));
+                          chart.draw(data, options);
+                        }, 13000);
+                        setInterval(function() {
+                          data.setValue(1, 1, 40 + Math.round(60 * Math.random()));
+                          chart.draw(data, options);
+                        }, 5000);
+                        setInterval(function() {
+                          data.setValue(2, 1, 60 + Math.round(20 * Math.random()));
+                          chart.draw(data, options);
+                        }, 26000);
+                      }
+                </script>
+
+                <div id="chart_div" style="width: 400px; height: 120px;"></div>
+              </p>
+              
             </div>
+
           </div>
         </div>        
       </div>
@@ -101,4 +119,3 @@
     
   });
 </script>
-
