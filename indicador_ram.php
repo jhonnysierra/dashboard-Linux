@@ -19,7 +19,7 @@
     <!-- fontawesone icons -->
     <script src="https://kit.fontawesome.com/a69236a15c.js" crossorigin="anonymous"></script>
 
-    <title>Indicador CPU-Dashboard-Linux </title>
+    <title>Indicador RAM-Dashboard-Linux </title>
   </head>
   <body>
 
@@ -34,9 +34,8 @@
 
     <div class="jumbotron jumbotron-fluid" style="padding: 15px;background-image: linear-gradient( 359.3deg,  rgba(196,214,252,1) 1%, rgba(187,187,187,0) 70.9% );">
       <div class="container">
-        <h1 class="display-4">Indicador CPU - Dashboard Linux</h1>
+        <h1 class="display-4">Indicador RAM - Dashboard Linux</h1>
       </div>
-
     </div>
 
     <div class="container-fluid">
@@ -51,55 +50,38 @@
               </ul>
             </div>
             <div class="card-body">
-              <h5 class="card-title">En las gráficas se aprecia el consumo de CPU de los último 5, 10 y 15 minutos respectivamente</h5>
+              <h5 class="card-title">En la gráfica se puede ver el uso de la memoria RAM</h5>
             <?php 
-                exec ("top -n1 -b| head -1 | awk {'print $10,$11,$12'} | awk -F ', ' {'print $1*100,\"\\n\",$2*100,\"\\n\",$3*100'}", $usocpu);
+                exec("free -m | head -2 | tail -1 | awk {'print $4'}", $memramlibre);
+                exec("free -m | head -2 | tail -1 | awk {'print $3+$6'}", $memramocupada);
             ?>
 
               <p class="card-text">
                 <script type="text/javascript">
-                      google.charts.load('current', {'packages':['gauge']});
+                      google.charts.load("current", {packages:["corechart"]});
                       google.charts.setOnLoadCallback(drawChart);
-
                       function drawChart() {
-
                         var data = google.visualization.arrayToDataTable([
-                          ['Label', 'Value'],
-                          ['5 min', <?php echo $usocpu[0];?>],
-                          ['10 min', <?php echo $usocpu[1];?>],
-                          ['15 min', <?php echo $usocpu[2];?>]
+                          ['Memoria RAM', 'Uso'],
+                          ['Libre: <?php echo $memramlibre[0]." MB";?>',        <?php echo $memramlibre[0];?>],
+                          ['Ocupada <?php echo $memramocupada[0]." MB";?>',     <?php echo $memramocupada[0];?>],
                         ]);
 
                         var options = {
-                          width: 400, height: 120,
-                          redFrom: 90, redTo: 100,
-                          yellowFrom:75, yellowTo: 90,
-                          minorTicks: 5
+                          title: 'Uso de memoria RAM',
+                          pieHole: 0.4,
                         };
 
-                        var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
-
+                        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
                         chart.draw(data, options);
-
-                        setInterval(function() {
-                          data.setValue(0, 1, 40 + Math.round(60 * Math.random()));
-                          chart.draw(data, options);
-                        }, 13000);
-                        setInterval(function() {
-                          data.setValue(1, 1, 40 + Math.round(60 * Math.random()));
-                          chart.draw(data, options);
-                        }, 5000);
-                        setInterval(function() {
-                          data.setValue(2, 1, 60 + Math.round(20 * Math.random()));
-                          chart.draw(data, options);
-                        }, 26000);
                       }
-                </script>
+                </script>                
+                <div id="donutchart" style="width: 900px; height: 500px; display: inline-block;"></div>
               </p>
-              <div id="chart_div" style="display: inline-block;"></div>
+              
             </div>
             <div class="card-footer text-muted">
-              SO Linux Mint
+                SO Linux Mint
             </div>
           </div>
         </div>        

@@ -52,9 +52,9 @@
                 <div class="list-group">
                   <a href="indicador_cpu.php" class="list-group-item list-group-item-action list-group-item-primary">Consumo de CPU</a>
                   <br>
-                  <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Consumo de Memoria RAM</a>
+                  <a href="indicador_ram.php" class="list-group-item list-group-item-action list-group-item-primary">Consumo de Memoria RAM</a>
                   <br>
-                  <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Uso de disco duro</a>
+                  <a href="indicador_disco.php" class="list-group-item list-group-item-action list-group-item-primary">Uso de disco duro</a>
                   <br>
                   <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Procesos</a>
                 </div>

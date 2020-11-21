@@ -19,7 +19,7 @@
     <!-- fontawesone icons -->
     <script src="https://kit.fontawesome.com/a69236a15c.js" crossorigin="anonymous"></script>
 
-    <title>Indicador CPU-Dashboard-Linux </title>
+    <title>Indicador Disco-Dashboard-Linux </title>
   </head>
   <body>
 
@@ -34,9 +34,8 @@
 
     <div class="jumbotron jumbotron-fluid" style="padding: 15px;background-image: linear-gradient( 359.3deg,  rgba(196,214,252,1) 1%, rgba(187,187,187,0) 70.9% );">
       <div class="container">
-        <h1 class="display-4">Indicador CPU - Dashboard Linux</h1>
+        <h1 class="display-4">Indicador Disco - Dashboard Linux</h1>
       </div>
-
     </div>
 
     <div class="container-fluid">
@@ -51,55 +50,66 @@
               </ul>
             </div>
             <div class="card-body">
-              <h5 class="card-title">En las gráficas se aprecia el consumo de CPU de los último 5, 10 y 15 minutos respectivamente</h5>
+              <h5 class="card-title">En la gráfica se puede ver el uso del Disco Duro</h5>
             <?php 
-                exec ("top -n1 -b| head -1 | awk {'print $10,$11,$12'} | awk -F ', ' {'print $1*100,\"\\n\",$2*100,\"\\n\",$3*100'}", $usocpu);
+
+                exec("df -h | grep 'sda' | awk {'print $1'} | cut -d'/' -f3", $nombDiscos);
+
+                //exec( "df -h | grep \"sda\" | awk {'print \"['\''\" $1 \"'\'','\''\" \"sda\" \"'\'', \" $3 \", \" $4 \"],\"'}", $resultado);
+
+                exec("df -h | grep 'sda' | awk {'print $5'} | cut -d'%' -f1", $usoDisco);
+                echo "resultado:".$usoDisco[0];
+
+                
+
             ?>
 
               <p class="card-text">
                 <script type="text/javascript">
-                      google.charts.load('current', {'packages':['gauge']});
+                      google.charts.load('current', {'packages':['treemap']});
                       google.charts.setOnLoadCallback(drawChart);
-
                       function drawChart() {
-
                         var data = google.visualization.arrayToDataTable([
-                          ['Label', 'Value'],
-                          ['5 min', <?php echo $usocpu[0];?>],
-                          ['10 min', <?php echo $usocpu[1];?>],
-                          ['15 min', <?php echo $usocpu[2];?>]
+                          ['Location', 'Parent', 'Volume usage (size)', 'Market increase/decrease (color)'],
+                          ['sda',       null,              0,                               0],
+                          <?php
+                            foreach ($nombDiscos as $valor) {
+                              echo "
+                                ['$valor','sda',0,0],
+                              ";
+                            }
+                          ?>
+                          
+                          <?php
+                            for ($i=0; $i < count($nombDiscos); $i++) { 
+                              $free = 100 - $usoDisco[$i];
+                              echo "
+                              ['".$nombDiscos[$i]."-used($usoDisco[$i]%)',     '".$nombDiscos[$i]."',     ".$usoDisco[$i].",  0],
+                              ['".$nombDiscos[$i]."-free($free%)',     '".$nombDiscos[$i]."',     ".$free       ." ,  1],";
+                            }
+                          
+                          ?>
                         ]);
 
-                        var options = {
-                          width: 400, height: 120,
-                          redFrom: 90, redTo: 100,
-                          yellowFrom:75, yellowTo: 90,
-                          minorTicks: 5
-                        };
+                        tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
 
-                        var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+                        tree.draw(data, {
+                          minColor: '#f00',
+                          midColor: '#ddd',
+                          maxColor: '#0d0',
+                          headerHeight: 15,
+                          fontColor: 'black',
+                          showScale: true
+                        });
 
-                        chart.draw(data, options);
-
-                        setInterval(function() {
-                          data.setValue(0, 1, 40 + Math.round(60 * Math.random()));
-                          chart.draw(data, options);
-                        }, 13000);
-                        setInterval(function() {
-                          data.setValue(1, 1, 40 + Math.round(60 * Math.random()));
-                          chart.draw(data, options);
-                        }, 5000);
-                        setInterval(function() {
-                          data.setValue(2, 1, 60 + Math.round(20 * Math.random()));
-                          chart.draw(data, options);
-                        }, 26000);
                       }
-                </script>
+                </script>                            
+                <div id="chart_div" style="width: 900px; height: 500px; display: inline-block;"></div>
               </p>
-              <div id="chart_div" style="display: inline-block;"></div>
+              
             </div>
             <div class="card-footer text-muted">
-              SO Linux Mint
+                SO Linux Mint
             </div>
           </div>
         </div>        
