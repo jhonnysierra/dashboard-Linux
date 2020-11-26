@@ -12,6 +12,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!--<meta http-equiv="refresh" content="30"/> -->
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
@@ -19,7 +20,7 @@
     <!-- fontawesone icons -->
     <script src="https://kit.fontawesome.com/a69236a15c.js" crossorigin="anonymous"></script>
 
-    <title>Indicador Disco-Dashboard-Linux </title>
+    <title>Indicador Procesos-Dashboard-Linux </title>
   </head>
   <body>
 
@@ -34,7 +35,7 @@
 
     <div class="jumbotron jumbotron-fluid" style="padding: 15px;background-image: linear-gradient( 359.3deg,  rgba(196,214,252,1) 1%, rgba(187,187,187,0) 70.9% );">
       <div class="container">
-        <h1 class="display-4">Indicador Disco - Dashboard Linux</h1>
+        <h1 class="display-4">Indicador Proceso - Dashboard Linux</h1>
       </div>
     </div>
 
@@ -50,66 +51,81 @@
               </ul>
             </div>
             <div class="card-body">
-              <h5 class="card-title">En la gráfica se puede ver el uso del Disco Duro</h5>
-            <?php 
+              <h5 class="card-title">En siguiente tabla se puede ver los 3 procesos con mayor consumo de CPU</h5>
+            <?php
+              exec("top -n1 -b | head -10 | tail -3 | awk {'print $12,$9'}", $procpu);
 
-                exec("df -h | grep 'sda' | awk {'print $1'} | cut -d'/' -f3", $nombDiscos);
-
-                //exec( "df -h | grep \"sda\" | awk {'print \"['\''\" $1 \"'\'','\''\" \"sda\" \"'\'', \" $3 \", \" $4 \"],\"'}", $resultado);
-
-                exec("df -h | grep 'sda' | awk {'print $5'} | cut -d'%' -f1", $usoDisco);                
-
+              exec("ps aux | awk '{print $2, $4,$11}' | sort -k2rn | head -3 | awk '{print $3,$2}'", $proram);
+              
             ?>
 
               <p class="card-text">
                 <script type="text/javascript">
-                      google.charts.load('current', {'packages':['treemap']});
-                      google.charts.setOnLoadCallback(drawChart);
-                      function drawChart() {
-                        var data = google.visualization.arrayToDataTable([
-                          ['Location', 'Parent', 'Volume usage (size)', 'Market increase/decrease (color)'],
-                          ['sda',       null,              0,                               0],
-                          <?php
-                            foreach ($nombDiscos as $valor) {
-                              echo "
-                                ['$valor','sda',0,0],
-                              ";
-                            }
-                          ?>
-                          
-                          <?php
-                            for ($i=0; $i < count($nombDiscos); $i++) { 
-                              $free = 100 - $usoDisco[$i];
-                              echo "
-                              ['".$nombDiscos[$i]."-used($usoDisco[$i]%)',     '".$nombDiscos[$i]."',     ".$usoDisco[$i].",  0],
-                              ['".$nombDiscos[$i]."-free($free%)',     '".$nombDiscos[$i]."',     ".$free       ." ,  1],";
-                            }
-                          
-                          ?>
+                      google.charts.load('current', {'packages':['table']});
+                      google.charts.setOnLoadCallback(drawTable);
+
+                      function drawTable() {
+                        var data = new google.visualization.DataTable();
+                       data.addColumn('string', 'Proceso');
+                        data.addColumn('string', '% de uso');
+                        
+                        data.addRows([
+                        <?php
+                          foreach ($procpu as $resultado) {
+                            $aux = explode(' ', $resultado);
+                            echo "
+                                ['$aux[0]',   '$aux[1]'],
+                            ";
+                          }
+
+                        ?>  
                         ]);
 
-                        tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
+                        var table = new google.visualization.Table(document.getElementById('table_div'));
 
-                        tree.draw(data, {
-                          minColor: '#f00',
-                          midColor: '#ddd',
-                          maxColor: '#0d0',
-                          headerHeight: 15,
-                          fontColor: 'black',
-                          showScale: true
-                        });
-
+                        table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
                       }
-                </script>                            
-                <div id="chart_div" style="width: 900px; height: 500px; display: inline-block;"></div>
+                </script>
+                <div class="table-primary" id="table_div"></div>
               </p>
               
+              <br><br><br>
+              <h5 class="card-title">En siguiente tabla se puede ver los 3 procesos con mayor consumo de RAM</h5>
+              <p class="card-text">
+                <script type="text/javascript">
+                      google.charts.load('current', {'packages':['table']});
+                      google.charts.setOnLoadCallback(drawTable);
+
+                      function drawTable() {
+                        var data = new google.visualization.DataTable();
+                        data.addColumn('string', 'Proceso');
+                        data.addColumn('string', '% de uso');
+                        
+                        data.addRows([
+                        <?php
+                          foreach ($proram as $resultado) {
+                            $aux = explode(' ', $resultado);
+                            echo "
+                                ['$aux[0]',   '$aux[1]'],
+                            ";
+                          }
+                        ?>
+                        ]);
+
+                        var table = new google.visualization.Table(document.getElementById('table_div_Mem'));
+
+                        table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+                      }
+                </script>
+                <div class="table-success" id="table_div_Mem"></div>
+              </p>
+
             </div>
             <div class="card-footer text-muted">
                 SO Linux Mint
             </div>
           </div>
-        </div>        
+        </div>
       </div>
     </div>
 
@@ -120,7 +136,6 @@
       <br> Dashboard de Linux - Versión 1.0 (Nov-2020) 
       <br> Esta obra está bajo una licencia <a rel="license" href="https://www.gnu.org/licenses/gpl.html">GNU General Public License  Ver. 3.0</a>.
     </font>
-
 
   </body>
 </html>

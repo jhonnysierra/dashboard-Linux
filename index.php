@@ -56,7 +56,7 @@
                   <br>
                   <a href="indicador_disco.php" class="list-group-item list-group-item-action list-group-item-primary">Uso de disco duro</a>
                   <br>
-                  <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Procesos</a>
+                  <a href="indicador_procesos.php" class="list-group-item list-group-item-action list-group-item-primary">Procesos</a>
                 </div>
               </div>
             </div>
@@ -73,7 +73,7 @@
                   <li class="list-group-item">Borrar usuarios</li>
                 </ul>
                 <br>
-                <a href="#menu1" class="btn btn-primary">Ir a administración</a>
+                <a href="admin_usu/admin_usu.php" class="btn btn-primary">Ir a administración</a>
               </div>
             </div>
           </div>
