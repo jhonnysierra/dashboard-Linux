@@ -6,6 +6,19 @@
  date Octubre 2020
  version 1.1
 -->
+
+<?php
+
+  if($_POST['btnEliminar']=='eliminar'){
+    $usuarioDel = $_POST['usernameDel'];
+    exec("sudo ./eliminarUsuario.sh $usuarioDel", $eliminarUsuario);
+    
+  }
+
+
+
+?>
+
 <!doctype html>
 <html lang="es">
   <head>
@@ -32,6 +45,29 @@
     <!-- Librerias para graficas Google -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+    <?php
+      if($_POST['btnCrearUsuario']=='crearUsuario'){
+
+        $nombreUsuario = $_POST['username'];
+        $password = $_POST['password'];
+        $tipoShell = $_POST['tipoShell'];
+
+        exec("sudo ./agregarUsuario.sh $password $tipoShell $nombreUsuario", $crearUsuario);
+        
+
+        echo'
+          <script type="text/javascript">
+            $(document).ready(function(){
+              $("#modalCrearUsuario").modal("show");
+        
+            });
+
+          </script>';
+      }
+
+    ?>
+
+
     <div class="jumbotron jumbotron-fluid" style="padding: 15px;background-image: linear-gradient( 359.3deg,  rgba(196,214,252,1) 1%, rgba(187,187,187,0) 70.9% );">
       <div class="container">
         <h1 class="display-4">Administrador Usuarios - Dashboard Linux</h1>
@@ -50,11 +86,10 @@
               </ul>
             </div>
             <div class="card-body">
-              <h5 class="card-title">En la tabla puede ver los usuarios que existen en el sistema</h5>
-            <?php 
 
-            ?>
+      <form method="post" action="admin_usu.php" name="agregarUsuario">
 
+              <h5 class="card-title">En la tabla puede ver los usuarios que existen en el sistema</h5>      
               <p class="card-text">
                 <table class="table table-hover">
                   <thead>
@@ -66,19 +101,22 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
                       <?php
-                        $user="jhonnysp";
-                        echo "
-                          <td><a href=editar_usu.php?user=$user><span><i class='fas fa-edit'></i></span></a></td>
+                        exec("awk -F: '$3>999 && $3<30000{print $1}' /etc/passwd", $users);
+                        $i=1;
+                        foreach ($users as $linea) {
+                          echo "
+                            <tr>
+                            <th scope='row'>$i</th>
+                            <td>$linea</td>
+                            <td><a href=editar_usu.php?user=$linea><span><i class='fas fa-edit'></i></span></a></td>
 
-                          <td><a href=# data-toggle='modal' data-target='#modalEliminar'><span><i class='fas fa-trash-alt fa-1x text-danger'></i></span></a></td>
-                        ";
+                            <td><button type='button' value=$linea class='btn btn-link' onclick='capturarUsuario(this.value)' data-toggle='modal' data-target='#modalEliminar'><span><i class='fas fa-trash-alt fa-1x text-danger'></i></span></button></td>
+                            </tr>
+                          ";
+                          $i=$i+1;
+                        }
                       ?>
-                    </tr>
-                    <tr>
                   </tbody>
                 </table>
 
@@ -94,40 +132,27 @@
               <h5 class="card-title">¿Desea crear un usuario en el sistema?. Ingrese los datos en el siguiente formulario.</h5>
               <br>
               <p>
-                <form method="post" action="admin_usu.php">
+                
                   <div class="form-group row col-sm-6">
                     <label for="username">Nombre de Usuario</label>
-                    <input type="text" name="username" id="username" value="" class="form-control"  aria-describedby="usuario">
+                    <input type="text" name="username" id="username" value="" class="form-control"  aria-describedby="usuario" required="">
                   </div>
                   <div class="form-group row col-sm-6">
                     <label for="password">Password</label>
-                    <input type="password" class="form-control" name="password" id="password" >
+                    <input type="password" class="form-control" name="password" id="password" required="">
+                  </div>
+                  <div class="form-group row col-sm-6">
+                    <label for="tipoShell">Tipo de ejecución</label>
+                    <select class="custom-select" name="tipoShell" required="">
+                      <option value="/bin/bash">Bash</option>
+                      <option value="/usr/sbin/nologin">No login</option>
+                      <option value="/bin/false">False</option>
+                    </select>
                   </div>
                   <div class="form-group row col-sm-6">
                     <button type="submit" class="btn btn-primary left" name="btnCrearUsuario" value="crearUsuario" id="ingresar">Crear Usuario</button>
-                  </div>
-
-
-                <!-- Modal Crear usuario -->
-                <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title" id="exampleModalLabel">Exitoso!!!</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        Se creó el usuario <?php echo $_POST['username'];?> en el sistema.
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>                  
-                </form>
+                  </div>                
+        
 
               </p>
             </div>
@@ -138,8 +163,30 @@
         </div>
       </div>
     </div>
-    <form method="post" action="admin_usu.php">
+    </form>
+
+    <!-- Modal Crear usuario -->
+    <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="exampleModalLabel">Exitoso!!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Se creó el usuario <?php echo $nombreUsuario;?> en el sistema.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
       <!-- Modal Eliminar usuario -->
+      <form method="post" action="admin_usu.php" name="form-eliminar">
       <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -151,6 +198,7 @@
             </div>
             <div class="modal-body">
               Si elimina el usuario perderá toda la información y no podra recuperarla.
+              <input type="text" name="usernameDel" id="usernameDel" value="" class="form-control"  aria-describedby="usuario">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -161,23 +209,6 @@
       </div>
     </form>
     
-    <?php
-
-      if($_POST['btnEliminar']=='eliminar'){
-        echo "Se elimino el usuario";
-      }
-
-      if($_POST['btnCrearUsuario']=='crearUsuario'){
-        echo "Se creó el usuario";
-
-        echo'
-          <script type="text/javascript">
-
-            $("#modalCrearUsuario").modal("show");
-
-          </script>';
-      }
-    ?>
 
 
     <!-- Licencia del software -->
@@ -191,3 +222,18 @@
 
   </body>
 </html>
+<!-- javascript code -->
+<script type="text/javascript">
+
+  $(document).ready(function(){
+
+    
+  });
+
+    function capturarUsuario(x){
+     
+      document.getElementById("usernameDel").value = x;
+
+    }
+
+</script>

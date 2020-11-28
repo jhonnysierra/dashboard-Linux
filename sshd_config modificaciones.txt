@@ -1,0 +1,7 @@
+/etc/ssh/sshd_config
+
+Lineas modificadas
+
+39 y 42 solo se quito el comentario
+
+linea 58 se descomento y se puso en no 
