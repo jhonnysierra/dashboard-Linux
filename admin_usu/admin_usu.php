@@ -64,7 +64,21 @@
 
           </script>';
       }
+      
+      if($_POST['btnCargarCSV']=='cargarCSV'){
+        /*
+        if (($fichero = fopen("datos.csv", "r")) !== FALSE) {
 
+          while (($datos = fgetcsv($fichero, 1000, ";")) !== FALSE) {
+              // Procesar los datos.
+              exec("sudo ./agregarUsuario.sh $datos[1] $datos[2] $datos[0]", $crearUsuario);
+          }
+        }*/
+        $file = $_POST['selectFile'];
+        echo "File:".$file;
+      }  
+
+      
     ?>
 
 
@@ -102,8 +116,14 @@
                   </thead>
                   <tbody>
                       <?php
+                        /**
+                         * Tabla que carga los usuarios exitentes en el sistema
+                        **/  
+
+                        // Funcion para consultar los usuarios que hay en el sistema
                         exec("awk -F: '$3>999 && $3<30000{print $1}' /etc/passwd", $users);
                         $i=1;
+                        // Ciclo para cargar los usuarios en la tabla
                         foreach ($users as $linea) {
                           echo "
                             <tr>
@@ -132,7 +152,7 @@
               <h5 class="card-title">¿Desea crear un usuario en el sistema?. Ingrese los datos en el siguiente formulario.</h5>
               <br>
               <p>
-                
+                  <!-- Formulario para crear un usuario en el sistema-->
                   <div class="form-group row col-sm-6">
                     <label for="username">Nombre de Usuario</label>
                     <input type="text" name="username" id="username" value="" class="form-control"  aria-describedby="usuario" required="">
@@ -149,12 +169,37 @@
                       <option value="/bin/false">False</option>
                     </select>
                   </div>
-                  <div class="form-group row col-sm-6">
+                  <div class="form-group row col-sm-12">
                     <button type="submit" class="btn btn-primary left" name="btnCrearUsuario" value="crearUsuario" id="ingresar">Crear Usuario</button>
-                  </div>                
+                  </div>    
+              </form>        
+            <!-- Formulario para crear un usuario en el sistema con archivo CSV--> 
+            <form method="post" action="admin_usu.php" name="cargarCSVUsuarios">
+              </p>
+
+              <br><br>
+              <hr style=" border: 0; height: 1px; width: 90%; align:center;
+                                    background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+                                    background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+                                    background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+                                    background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);"
+              />
+
+              <h5 class="card-title">¿Desea crear un usuario desde un archivo CSV. Presione el botón Cargar CSV y el archivo será cargado automáticamente</h5>
+              <br>
+              <p>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="customFileLang" name="selectFile" lang="es">
+                  <label class="custom-file-label" for="customFileLang">Seleccionar Archivo</label>
+                </div> 
+                      
+                  <div class="form-group row col-sm-12">
+                    <button type="submit" class="btn btn-success" name="btnCargarCSV" value="cargarCSV" id="cargarCSV">Cargar CSV</button>
+                  </div>    
         
 
               </p>
+            </form>
             </div>
             <div class="card-footer text-muted">
                 SO Linux Mint
@@ -164,6 +209,8 @@
       </div>
     </div>
     </form>
+
+}
 
     <!-- Modal Crear usuario -->
     <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -198,7 +245,7 @@
             </div>
             <div class="modal-body">
               Si elimina el usuario perderá toda la información y no podra recuperarla.
-              <input type="text" name="usernameDel" id="usernameDel" value="" class="form-control"  aria-describedby="usuario">
+              <input type="hidden" name="usernameDel" id="usernameDel" value="" class="form-control"  aria-describedby="usuario">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -225,15 +272,11 @@
 <!-- javascript code -->
 <script type="text/javascript">
 
-  $(document).ready(function(){
+  // Funcion para actualizar el nombre del usuario seleccionado de la tabla y escribirlo en el campo oculto para eliminarlo.
+  function capturarUsuario(x){
+   
+    document.getElementById("usernameDel").value = x;
 
-    
-  });
-
-    function capturarUsuario(x){
-     
-      document.getElementById("usernameDel").value = x;
-
-    }
+  }
 
 </script>

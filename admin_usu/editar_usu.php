@@ -6,6 +6,7 @@
  date Octubre 2020
  version 1.1
 -->
+
 <!doctype html>
 <html lang="es">
   <head>
@@ -32,6 +33,28 @@
     <!-- Librerias para graficas Google -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+    <?php
+      $usuarioActual = $_GET['user'];
+
+      if($_POST['btnEditar']=='editar'){
+        $nombreNuevo = $_POST['usuario'];
+        $passwordNuevo = $_POST['password'];
+        $usuarioActual = $_POST['usuarioActual'];
+
+        exec("sudo ./editarUsuario.sh $nombreNuevo $usuarioActual $passwordNuevo", $editarUsuario);
+        echo'
+              <script type="text/javascript">
+              $(document).ready(function(){
+                $("#modalEditar").modal("show");
+
+                $("#modalEditar").on("hidden.bs.modal", function (e) {
+                  window.location="admin_usu.php";
+                });
+              });
+              </script>';
+      }
+    ?>
+
     <div class="jumbotron jumbotron-fluid" style="padding: 15px;background-image: linear-gradient( 359.3deg,  rgba(196,214,252,1) 1%, rgba(187,187,187,0) 70.9% );">
       <div class="container">
         <h1 class="display-4">Editar Usuario - Administrador Usuarios</h1>
@@ -49,23 +72,30 @@
               </ul>
             </div>
             <div class="card-body">
-              <h5 class="card-title">Edite la información del usuario</h5><br>
-                <form method="post" action="editar_usu.php">
+              <h5 class="card-title">Edite la información del usuario <u><strong><medium class="text-muted"><?php echo $usuarioActual;?></medium></strong></u></h5> <br>
+                
+                <!-- Formulario editar datos de usuario -->
+                <form method="post" action="editar_usu.php" name="editar_usu">
                   <div class="form-group row">
                     <label for="usuario" class="col-sm-2 col-form-label">Nombre Usuario</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="usuario">
+                      <input type="text" class="form-control" name="usuario" id="usuario" value="" aria-describedby="usuario" placeholder="Ingrese el nuevo nombre de usuario" required="">
                     </div>
                   </div>
                   <div class="form-group row">
                     <label for="password" class="col-sm-2 col-form-label">Contraseña</label>
                     <div class="col-sm-10">
-                      <input type="password" class="form-control" id="password">
+                      <input type="password" class="form-control" name="password" id="password" value="" placeholder="Ingrese la nueva contraseña" required="">
                     </div>
                   </div>
                   <div class="form-group row">
                     <div class="col-sm-10">
-                      <button type="submit" class="btn btn-primary">Editar</button>
+                      <input type="hidden" name="usuarioActual" id="usuarioActual" value="<?php echo $usuarioActual;?>" class="form-control"  aria-describedby="usuario">
+                    </div>
+                  </div>   
+                  <div class="form-group row">
+                    <div class="col-sm-10">
+                      <button type="submit" class="btn btn-primary" name="btnEditar" value="editar">Editar</button>
                     </div>
                   </div>
                 </form>  
@@ -81,22 +111,21 @@
       </div>
     </div>
 
-    <!-- Modal Eliminar usuario -->
-    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal editar usuario -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title" id="exampleModalLabel">¿Realmente desea eliminar el usuario?</h5>
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="exampleModalLabel">Exitoso!!!</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            Si elimina el usuario perderá toda la información y no podra recuperarla.
+            Se editó la informacion del usuario.
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            <a href="#?id=hola" class="btn btn-danger">Eliminar</a>
           </div>
         </div>
       </div>
