@@ -76,6 +76,15 @@
         }*/
         $file = $_POST['selectFile'];
         echo "File:".$file;
+
+        echo'
+          <script type="text/javascript">
+            $(document).ready(function(){
+              $("#modalCargaCSV").modal("show");
+        
+            });
+
+          </script>';
       }  
 
       
@@ -232,6 +241,26 @@
       </div>
     </div>
 
+    <!-- Modal carga masiva -->
+    <div class="modal fade" id="modalCargaCSV" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="exampleModalLabel">Exitoso!!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Se cargó el archivo CSV de manera correcta. Verifique los usuarios en la tabla.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>    
+
       <!-- Modal Eliminar usuario -->
       <form method="post" action="admin_usu.php" name="form-eliminar">
       <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -269,9 +298,9 @@
 
   </body>
 </html>
+
 <!-- javascript code -->
 <script type="text/javascript">
-
   // Funcion para actualizar el nombre del usuario seleccionado de la tabla y escribirlo en el campo oculto para eliminarlo.
   function capturarUsuario(x){
    
