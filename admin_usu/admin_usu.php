@@ -197,11 +197,14 @@
               <h5 class="card-title">¿Desea crear un usuario desde un archivo CSV. Presione el botón Cargar CSV y el archivo será cargado automáticamente</h5>
               <br>
               <p>
+                <!--
                 <div class="custom-file">
+                  
                   <input type="file" class="custom-file-input" id="customFileLang" name="selectFile" lang="es">
                   <label class="custom-file-label" for="customFileLang">Seleccionar Archivo</label>
+
                 </div> 
-                      
+                -->      
                   <div class="form-group row col-sm-12">
                     <button type="submit" class="btn btn-success" name="btnCargarCSV" value="cargarCSV" id="cargarCSV">Cargar CSV</button>
                   </div>    
@@ -298,9 +301,9 @@
 
   </body>
 </html>
-
 <!-- javascript code -->
 <script type="text/javascript">
+
   // Funcion para actualizar el nombre del usuario seleccionado de la tabla y escribirlo en el campo oculto para eliminarlo.
   function capturarUsuario(x){
    
