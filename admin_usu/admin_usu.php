@@ -66,17 +66,14 @@
       }
       
       if($_POST['btnCargarCSV']=='cargarCSV'){
-        /*
         if (($fichero = fopen("datos.csv", "r")) !== FALSE) {
 
           while (($datos = fgetcsv($fichero, 1000, ";")) !== FALSE) {
               // Procesar los datos.
               exec("sudo ./agregarUsuario.sh $datos[1] $datos[2] $datos[0]", $crearUsuario);
           }
-        }*/
-        $file = $_POST['selectFile'];
-        echo "File:".$file;
-
+        }
+  
         echo'
           <script type="text/javascript">
             $(document).ready(function(){
